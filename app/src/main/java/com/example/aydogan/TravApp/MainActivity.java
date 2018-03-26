@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener {
@@ -59,14 +60,17 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment = null;
         switch (itemId) {
             case R.id.nav_compass:
+                findViewById(R.id.textView2).setVisibility(View.INVISIBLE);
                 fragment = new FragmentCompass();
                 break;
             case R.id.nav_nearbyplaces:
+                findViewById(R.id.textView2).setVisibility(View.INVISIBLE);
                 fragment = new FragmentNearbyPlaces();
                 break;
 //            case R.id.nav_menu3:
-//                fragment = new Menu3();
-//                break;
+//              findViewById(R.id.textView2).setVisibility(View.INVISIBLE);
+//              fragment = new Menu3();
+//              break;
         }
 
         if (fragment != null) {
