@@ -33,7 +33,7 @@ import java.util.List;
  * Created by aydogan on 26.03.18.
  */
 
-public class ChildActivityNearbyPlaces extends Fragment {
+public class FragmentNearbyPlaces extends Fragment {
     public static final String TAG = "CurrentLocNearByPlaces";
     private static final int LOC_REQ_CODE = 1;
     protected PlaceDetectionClient mPlaceDetectionClient;
@@ -69,10 +69,16 @@ public class ChildActivityNearbyPlaces extends Fragment {
     }
 
     private void getCurrentPlaceData() {
+        //kijken of er permission is gegeven aan de app om gebruikt te maken van gps
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            //is dit niet het geval dan wordt er om toestemming gevraagd
             requestLocationAccessPermission();
             return;
         }
+        //De werking van volgende code wordt in detail bescheven op de google API service site
+        //Ruw genomen wordt er met gps data gevoerd aan de places API en die geeft meerdere nabij gelegeven locaties door met bij
+        //elke locatie een waarschijnlijkheid dat de gebruiker zich daar bevindt
+        //al deze locaties worden dan in een lijst bijgehouden en gevoerd aan de recyclerview
         Task<PlaceLikelihoodBufferResponse> placeResult = mPlaceDetectionClient.getCurrentPlace(null);
         placeResult.addOnCompleteListener(new OnCompleteListener<PlaceLikelihoodBufferResponse>() {
             @SuppressLint("RestrictedApi")
@@ -111,4 +117,3 @@ public class ChildActivityNearbyPlaces extends Fragment {
     }
 
 }
-

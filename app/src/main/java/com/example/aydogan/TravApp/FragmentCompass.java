@@ -20,7 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class ChildActivityCompass extends Fragment implements SensorEventListener {
+public class FragmentCompass extends Fragment implements SensorEventListener {
     private ImageView image;
     private SensorManager mSensorManager;
     private TextView tvHeading;
@@ -28,7 +28,7 @@ public class ChildActivityCompass extends Fragment implements SensorEventListene
     private float[] mGravity = new float[3];
     private float azimuth = 0f;
     private float currentAzimuth = 0f;
-
+    //deze hele klasse is gescheven analoog naar de beschrijfing op androiddev
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +38,7 @@ public class ChildActivityCompass extends Fragment implements SensorEventListene
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View myFragmentView = inflater.inflate(R.layout.activity_child_compass, container, false);
+        View myFragmentView = inflater.inflate(R.layout.fragment_compass, container, false);
         image = myFragmentView.findViewById(R.id.imageViewCompass);
         tvHeading = myFragmentView.findViewById(R.id.tvHeading);
         return myFragmentView;
