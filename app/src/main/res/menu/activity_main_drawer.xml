@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_compass"
+            android:icon="@drawable/ic_menu_compass"
+            android:title="Compass" />
+        <item
+            android:id="@+id/nav_nearbyplaces"
+            android:icon="@drawable/ic_place_black_24dp"
+            android:title="Nearby Places" />
+        <item
+            android:id="@+id/nav_weather"
+            android:icon="@drawable/ic_cloudy_black_24dp"
+            android:title="Weather" />
+    </group>
+
+</menu>
