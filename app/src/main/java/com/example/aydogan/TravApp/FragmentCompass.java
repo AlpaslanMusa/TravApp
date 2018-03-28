@@ -82,16 +82,33 @@ public class FragmentCompass extends Fragment implements SensorEventListener {
     public void onSensorChanged(SensorEvent sensorEvent) {
         final float alpha = 0.97f;
         synchronized (this) {
+//            if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+//                mGravity[0] = alpha * mGravity[0] + (1 - alpha) * sensorEvent.values[0];
+//                mGravity[1] = alpha * mGravity[1] + (1 - alpha) * sensorEvent.values[1];
+//                mGravity[2] = alpha * mGravity[2] + (1 - alpha) * sensorEvent.values[2];
+//
+//            }
+//            if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+//                mGeomagnetic[0] = alpha * mGeomagnetic[0] + (1 - alpha) * sensorEvent.values[0];
+//                mGeomagnetic[1] = alpha * mGeomagnetic[1] + (1 - alpha) * sensorEvent.values[1];
+//                mGeomagnetic[2] = alpha * mGeomagnetic[2] + (1 - alpha) * sensorEvent.values[2];
+//
+//            }
+
             if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                mGravity[0] = alpha * mGravity[0] + (1 - alpha) * sensorEvent.values[0];
-                mGravity[1] = alpha * mGravity[1] + (1 - alpha) * sensorEvent.values[1];
-                mGravity[2] = alpha * mGravity[2] + (1 - alpha) * sensorEvent.values[2];
+                float[] uitgang1 = new float[3];
+                filter(sensorEvent.values, uitgang1);
+                mGravity[0] = uitgang1[0];
+                mGravity[1] = uitgang1[1];
+                mGravity[2] = uitgang1[2];
 
             }
             if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-                mGeomagnetic[0] = alpha * mGeomagnetic[0] + (1 - alpha) * sensorEvent.values[0];
-                mGeomagnetic[1] = alpha * mGeomagnetic[1] + (1 - alpha) * sensorEvent.values[1];
-                mGeomagnetic[2] = alpha * mGeomagnetic[2] + (1 - alpha) * sensorEvent.values[2];
+                float[] uitgang2 = new float[3];
+                filter(sensorEvent.values, uitgang2);
+                mGeomagnetic[0] = uitgang2[0];
+                mGeomagnetic[1] = uitgang2[1];
+                mGeomagnetic[2] = uitgang2[2];
 
             }
 
@@ -105,7 +122,7 @@ public class FragmentCompass extends Fragment implements SensorEventListener {
                 //deze parameter zijn berekent adhv float[] R
                 SensorManager.getOrientation(R, orientation);
                 //We de orientation[0] is gevuld met de waarde van de zogenaamde azimuth
-                //AndroidDev zegt het volgende erover: "Azimuth, angle of rotation about the -z axis. This value represents the angle between the device's y axis and the magnetic north pole."
+                //AndroidDev zegt het volgende erover: "Azimuth, angle of rotation about the z axis. This value represents the angle between the device's y axis and the magnetic north pole."
                 //orientation[0] geeft de azimuth terug in radialen we reken deze om naar graden
                 azimuth = (float) Math.toDegrees(orientation[0]);
                 //we rekenen vervolgens deze graden om want RotateAnimation kan niet werken met graden
@@ -122,6 +139,16 @@ public class FragmentCompass extends Fragment implements SensorEventListener {
                 image.startAnimation(anim);
             }
         }
+    }
+
+    public float[] filter(float[] input, float[] prev) {
+        if (input == null || prev == null) throw new NullPointerException("input and prev float arrays must be non-NULL");
+        if (input.length != prev.length) throw new IllegalArgumentException("input and prev must be the same length");
+
+        for (int i = 0; i < input.length; i++) {
+            prev[i] = prev[i] + 0.2f + (input[i] - prev[i]);
+        }
+        return prev;
     }
 
     @Override
