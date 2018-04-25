@@ -5,4 +5,5 @@ package com.example.aydogan.TravApp;
  */
 
 public class FragmentWheater {
+
 }
