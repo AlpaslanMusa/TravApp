@@ -10,15 +10,15 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 public class FragmentCompass extends Fragment implements SensorEventListener {
     private ImageView image;
@@ -28,6 +28,7 @@ public class FragmentCompass extends Fragment implements SensorEventListener {
     private float[] mGravity = new float[3];
     private float azimuth = 0f;
     private float currentAzimuth = 0f;
+
     //deze hele klasse is gescheven analoog naar de beschrijfing op androiddev
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,7 @@ public class FragmentCompass extends Fragment implements SensorEventListener {
     public void onStart() {
         super.onStart();
 
-        if(this.getUserVisibleHint()) {
+        if (this.getUserVisibleHint()) {
             this.registerSensorListener();
         }
     }
@@ -129,8 +130,10 @@ public class FragmentCompass extends Fragment implements SensorEventListener {
     }
 
     public float[] filter(float[] input, float[] prev) {
-        if (input == null || prev == null) throw new NullPointerException("input and prev float arrays must be non-NULL");
-        if (input.length != prev.length) throw new IllegalArgumentException("input and prev must be the same length");
+        if (input == null || prev == null)
+            throw new NullPointerException("input and prev float arrays must be non-NULL");
+        if (input.length != prev.length)
+            throw new IllegalArgumentException("input and prev must be the same length");
 
         for (int i = 0; i < input.length; i++) {
             prev[i] = prev[i] + 0.2f + (input[i] - prev[i]);

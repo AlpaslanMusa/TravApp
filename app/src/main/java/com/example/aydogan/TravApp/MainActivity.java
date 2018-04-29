@@ -67,15 +67,16 @@ public class MainActivity extends AppCompatActivity
                 findViewById(R.id.textView2).setVisibility(View.INVISIBLE);
                 fragment = new FragmentNearbyPlaces();
                 break;
-//            case R.id.nav_menu3:
-//              findViewById(R.id.textView2).setVisibility(View.INVISIBLE);
-//              fragment = new Menu3();
-//              break;
+            case R.id.nav_weather:
+              findViewById(R.id.textView2).setVisibility(View.INVISIBLE);
+                fragment = new FragmentWheater();
+              break;
         }
 
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.content_frame, fragment);
+            ft.addToBackStack(null);
             ft.commit();
         }
 

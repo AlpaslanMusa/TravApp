@@ -7,10 +7,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Button;
+
 import com.google.android.gms.location.places.Place;
+
 import java.util.List;
 
 import static android.support.v4.content.ContextCompat.startActivity;
@@ -27,6 +29,7 @@ public class PlacesRecyclerViewAdapter extends RecyclerView.Adapter<PlacesRecycl
         this.placesList = list;
         this.context = ctx;
     }
+
     @Override
     public int getItemCount() {
         return placesList.size();
@@ -47,13 +50,13 @@ public class PlacesRecyclerViewAdapter extends RecyclerView.Adapter<PlacesRecycl
         holder.address.setText(place.getAddress());
         holder.phone.setText(place.getPhoneNumber());
 
-        if(place.getWebsiteUri() != null){
+        if (place.getWebsiteUri() != null) {
             holder.website.setText(place.getWebsiteUri().toString());
         }
 
-        if(place.getRating() > -1){
-            holder.ratingBar.setNumStars((int)place.getRating());
-        }else{
+        if (place.getRating() > -1) {
+            holder.ratingBar.setNumStars((int) place.getRating());
+        } else {
             holder.ratingBar.setVisibility(View.GONE);
         }
 
@@ -65,6 +68,14 @@ public class PlacesRecyclerViewAdapter extends RecyclerView.Adapter<PlacesRecycl
         });
     }
 
+    private void showOnMap(Place place) {
+        Intent intent = null, chooser = null;
+        Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + place.getAddress());
+        intent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        chooser = Intent.createChooser(intent, "Display on Map");
+        startActivity(context, chooser, null);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
         public TextView address;
@@ -72,7 +83,6 @@ public class PlacesRecyclerViewAdapter extends RecyclerView.Adapter<PlacesRecycl
         public TextView website;
         public RatingBar ratingBar;
         public Button viewOnMap;
-
 
 
         public ViewHolder(View view) {
@@ -85,12 +95,5 @@ public class PlacesRecyclerViewAdapter extends RecyclerView.Adapter<PlacesRecycl
             viewOnMap = view.findViewById(R.id.view_map_b);
         }
 
-    }
-    private void showOnMap(Place place){
-        Intent intent = null, chooser = null;
-        Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + place.getAddress());
-        intent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        chooser = Intent.createChooser(intent, "Display on Map");
-        startActivity(context, chooser, null);
     }
 }

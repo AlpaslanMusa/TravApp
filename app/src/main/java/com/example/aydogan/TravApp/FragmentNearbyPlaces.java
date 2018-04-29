@@ -2,9 +2,14 @@ package com.example.aydogan.TravApp;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -41,6 +46,7 @@ public class FragmentNearbyPlaces extends Fragment {
     protected View myFragmentView;
     protected GeoDataClient mGeoDataClient;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -67,6 +73,7 @@ public class FragmentNearbyPlaces extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle("Nearby Places");
+        isLocatieServicesActief();
     }
 
     private void getCurrentPlaceData() {
@@ -76,10 +83,6 @@ public class FragmentNearbyPlaces extends Fragment {
             requestLocationAccessPermission();
             return;
         }
-        //De werking van volgende code wordt in detail bescheven op de google API service site
-        //Ruw genomen wordt er met gps data gevoerd aan de places API en die geeft meerdere nabij gelegeven locaties door met bij
-        //elke locatie een waarschijnlijkheid dat de gebruiker zich daar bevindt
-        //al deze locaties worden dan in een lijst bijgehouden en gevoerd aan de recyclerview
         Task<PlaceLikelihoodBufferResponse> placeResult = mPlaceDetectionClient.getCurrentPlace(null);
         placeResult.addOnCompleteListener(new OnCompleteListener<PlaceLikelihoodBufferResponse>() {
             @SuppressLint("RestrictedApi")
@@ -91,7 +94,8 @@ public class FragmentNearbyPlaces extends Fragment {
                     Log.i(TAG, String.format("Place '%s' has likelihood: %g",
                             placeLikelihood.getPlace().getName(),
                             placeLikelihood.getLikelihood()));
-                            placesList.add(placeLikelihood.getPlace().freeze());
+
+                    placesList.add(placeLikelihood.getPlace().freeze());
                 }
                 likelyPlaces.release();
                 PlacesRecyclerViewAdapter recyclerViewAdapter = new
@@ -114,6 +118,41 @@ public class FragmentNearbyPlaces extends Fragment {
             if (resultCode == getActivity().RESULT_OK) {
                 getCurrentPlaceData();
             }
+        }
+    }
+
+    public void isLocatieServicesActief() {
+        boolean gps_enabled = false;
+        boolean network_enabled = false;
+
+        LocationManager lm = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        try {
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        } catch (Exception ex) {
+        }
+        try {
+            network_enabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        } catch (Exception ex) {
+        }
+        if (!gps_enabled && !network_enabled) {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this.getActivity());
+            dialog.setMessage("gps is niet geactiveerd");
+            dialog.setPositiveButton("open locatie instellingen", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    Intent myIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(myIntent);
+                }
+            });
+            dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+                    // TODO Auto-generated method stub
+
+                }
+            });
+            dialog.show();
         }
     }
 
