@@ -2,19 +2,17 @@ package com.example.aydogan.TravApp;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-public class MainActivity extends AppCompatActivity
-    implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +50,9 @@ public class MainActivity extends AppCompatActivity
                 fragment = new FragmentNearbyPlaces();
                 break;
             case R.id.nav_weather:
-              findViewById(R.id.textView2).setVisibility(View.INVISIBLE);
-                fragment = new FragmentWheater();
-              break;
+                findViewById(R.id.textView2).setVisibility(View.INVISIBLE);
+                fragment = new FragmentWeather();
+                break;
         }
 
         if (fragment != null) {
@@ -64,7 +62,7 @@ public class MainActivity extends AppCompatActivity
             ft.commit();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }
 

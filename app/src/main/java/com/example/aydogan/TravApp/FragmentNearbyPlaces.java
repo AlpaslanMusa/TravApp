@@ -48,15 +48,12 @@ import java.util.List;
 /**
  * Created by aydogan on 26.03.18.
  */
-
 public class FragmentNearbyPlaces extends Fragment {
-    public static final String TAG = "CurrentLocNearByPlaces";
-    private static final int LOC_REQ_CODE = 1;
-    private static final int REQUEST_PLACE_PICKER = 1;
-    private PlaceDetectionClient mPlaceDetectionClient;
-    private RecyclerView recyclerView;
-    private View myFragmentView;
-    private GeoDataClient mGeoDataClient;
+    protected static final String TAG = "CurrentLocNearByPlaces";
+    protected static final int LOC_REQ_CODE = 1;
+    protected static final int REQUEST_PLACE_PICKER = 1;
+    protected PlaceDetectionClient mPlaceDetectionClient;
+    protected RecyclerView recyclerView;
 
 
     @Override
@@ -70,13 +67,13 @@ public class FragmentNearbyPlaces extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        myFragmentView = inflater.inflate(R.layout.fragment_nearbyplaces, container, false);
+        View myFragmentView = inflater.inflate(R.layout.fragment_nearbyplaces, container, false);
         recyclerView = myFragmentView.findViewById(R.id.places_lst);
         LinearLayoutManager recyclerLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(recyclerLayoutManager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), recyclerLayoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
-        mGeoDataClient = Places.getGeoDataClient(getActivity(), null);
+        GeoDataClient mGeoDataClient = Places.getGeoDataClient(getActivity(), null);
         mPlaceDetectionClient = Places.getPlaceDetectionClient(getActivity(), null);
         return myFragmentView;
     }
@@ -92,10 +89,10 @@ public class FragmentNearbyPlaces extends Fragment {
         if (item.getItemId() == R.id.list_view) {
             getCurrentPlaceDataList();
             return true;
-        } else if(item.getItemId() == R.id.map_view){
+        } else if (item.getItemId() == R.id.map_view) {
             getCurrentPlaceDataMap();
             return true;
-        }else {
+        } else {
             return true;
         }
     }
@@ -104,7 +101,6 @@ public class FragmentNearbyPlaces extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle("Nearby Places");
-        getCurrentPlaceDataList();
     }
 
     public void getCurrentPlaceDataList() {
@@ -167,7 +163,6 @@ public class FragmentNearbyPlaces extends Fragment {
             final Place place = PlacePicker.getPlace(data, getContext());
 
             Intent intent = null, chooser = null;
-            //Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + place.getAddress());
             intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=" + place.getAddress()));
             intent.setPackage("com.google.android.apps.maps");
             try {

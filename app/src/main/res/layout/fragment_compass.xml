@@ -9,7 +9,6 @@
         android:id="@+id/imageViewCompass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvHeading"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="106dp"
         android:layout_marginEnd="42dp"

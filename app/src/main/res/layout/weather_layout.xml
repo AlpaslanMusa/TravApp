@@ -11,11 +11,14 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:layout_marginEnd="4dp"
-        android:text="TextView"
+        android:text="@string/textview"
         app:layout_constraintBottom_toTopOf="@+id/luchtdruk"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:textStyle = "bold"
+        android:textColor="#FF000000"
+        android:textSize="12sp"/>
 
     <TextView
         android:id="@+id/luchtdruk"
@@ -23,11 +26,14 @@
         android:layout_height="19dp"
         android:layout_marginBottom="4dp"
         android:layout_marginEnd="4dp"
-        android:text="TextView"
+        android:text="@string/textview"
         app:layout_constraintBottom_toTopOf="@+id/weerbericht"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:textStyle = "bold"
+        android:textColor="#FF000000"
+        android:textSize="12sp"/>
 
     <TextView
         android:id="@+id/weerbericht"
@@ -35,11 +41,14 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
         android:layout_marginEnd="4dp"
-        android:text="TextView"
+        android:text="@string/textview"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:textStyle = "bold"
+        android:textColor="#FF000000"
+        android:textSize="12sp"/>
 
     <TextView
         android:id="@+id/temperatuur"
@@ -48,31 +57,37 @@
         android:layout_marginBottom="4dp"
         android:layout_marginEnd="4dp"
         android:layout_marginTop="4dp"
-        android:text="TextView"
+        android:text="@string/textview"
         app:layout_constraintBottom_toTopOf="@+id/luchtvochtigheid"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="1.0"
+        android:textStyle = "bold"
+        android:textColor="#FF000000"
+        android:textSize="12sp"/>
 
     <ImageView
         android:id="@+id/icoon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/cast_abc_scrubber_control_off_mtrl_alpha" />
 
     <TextView
         android:id="@+id/tijd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
         android:layout_marginStart="4dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginTop="4dp"
+        android:text="@string/textview"
+        android:textColor="#FF000000"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

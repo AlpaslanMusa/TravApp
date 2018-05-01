@@ -1,24 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_frame"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="82dp"
     android:background="@android:color/white"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    android:orientation="vertical"
     tools:context="com.example.aydogan.TravApp.MainActivity"
-    tools:showIn="@layout/app_bar_main">
+    tools:showIn="@layout/app_bar_main"
+    android:layout_centerHorizontal="true">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/klein_logo_goiiw" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="@string/welcome_this_app_is_a_project_for_our_class_introduction_to_android_applications_nthis_app_is_made_to_proof_programming_skills_that_are_teached_in_class_it_s_a_so_called_travell_app_that_can_be_used_when_going_for_a_trip_it_has_a_compass_an_section_to_look_for_nearby_interesting_places_and_finally_a_section_to_check_the_wheather_forecast_for_the_location_you_are_at"
+        android:textAlignment="center"
+        android:gravity="center"/>
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="select left-upper corner to continue"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-</android.support.constraint.ConstraintLayout>
+        android:layout_marginBottom="25dp"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:text="@string/select_left_upper_corner_to_continue"
+        android:textAlignment="center" />
+</LinearLayout>

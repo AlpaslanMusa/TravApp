@@ -1,7 +1,5 @@
 package com.example.aydogan.TravApp;
 
-import android.*;
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -9,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -46,46 +43,38 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Created by aydogan on 26.03.18.
  */
 
-public class FragmentWheater extends Fragment {
-    public static final String TAG = "CurrentLocNearByPlaces";
+public class FragmentWeather extends Fragment {
+    protected static final String TAG = "CurrentLocNearByPlaces";
     protected static final int LOC_REQ_CODE = 1;
+    protected String lat;
+    protected String lon;
     protected View myFragmentView;
     protected RecyclerView recyclerView;
     protected GeoDataClient mGeoDataClient;
     protected PlaceDetectionClient mPlaceDetectionClient;
-    protected String lat;
-    protected String lon;
     protected String temp;
     protected String weerbericht;
-    protected String locatie;
     protected String luchtdruk;
     protected String vochtigheid;
     protected String tijd;
     protected List<String[]> weatherList;
     protected String[] weather;
-
-    public static String EpochToDate(long time, String formatString) {
-        Date updatedate = new Date(time * 1000);
-        SimpleDateFormat format = new SimpleDateFormat(formatString);
-        return format.format(updatedate);
-
-    }
+    protected String icon;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         isLocatieServicesActief();
+        mGeoDataClient = Places.getGeoDataClient(getActivity(), null);
+        mPlaceDetectionClient = Places.getPlaceDetectionClient(getActivity(), null);
     }
 
     @Override
@@ -96,7 +85,7 @@ public class FragmentWheater extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        getCurrentPlace();
+        getCurrentPlaceData();
         getJSONData();
         return true;
     }
@@ -111,9 +100,7 @@ public class FragmentWheater extends Fragment {
         recyclerView.setLayoutManager(recyclerLayoutManager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), recyclerLayoutManager.getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
-        mGeoDataClient = Places.getGeoDataClient(getActivity(), null);
-        mPlaceDetectionClient = Places.getPlaceDetectionClient(getActivity(), null);
-        getCurrentPlace();
+        getCurrentPlaceData();
         getJSONData();
         return myFragmentView;
     }
@@ -163,9 +150,9 @@ public class FragmentWheater extends Fragment {
         }
     }
 
-    private void getCurrentPlace() {
+    private void getCurrentPlaceData() {
         //kijken of er permission is gegeven aan de app om gebruikt te maken van gps
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //is dit niet het geval dan wordt er om toestemming gevraagd
             requestLocationAccessPermission();
             return;
@@ -179,13 +166,13 @@ public class FragmentWheater extends Fragment {
             @SuppressLint("RestrictedApi")
             @Override
             public void onComplete(@NonNull Task<PlaceLikelihoodBufferResponse> task) {
-                List<Place> placesList = new ArrayList<>();
-                    PlaceLikelihoodBufferResponse likelyPlaces = task.getResult();
-                    for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-                        Log.i(TAG, String.format("Place '%s' has likelihood: %g", placeLikelihood.getPlace().getName(), placeLikelihood.getLikelihood()));
-                        placesList.add(placeLikelihood.getPlace());
-                    }
-                    likelyPlaces.release();
+                PlaceLikelihoodBufferResponse likelyPlaces = task.getResult();
+                List<Place> placesList = new ArrayList<Place>();
+                for (PlaceLikelihood placeLikelihood : likelyPlaces) {
+                    Log.i(TAG, String.format("Place '%s' has likelihood: %g", placeLikelihood.getPlace().getName(), placeLikelihood.getLikelihood()));
+                    placesList.add(placeLikelihood.getPlace().freeze());
+                }
+                likelyPlaces.release();
                 lat = String.valueOf(placesList.get(0).getLatLng().latitude);
                 lon = String.valueOf(placesList.get(0).getLatLng().longitude);
             }
@@ -193,52 +180,49 @@ public class FragmentWheater extends Fragment {
 
     }
 
-        protected void getJSONData() {
-            getCurrentPlace();
-            getCurrentPlace();
-            String urldisplay = "http://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&APPID=dbc34f5cdcffd9d33c323cc03d196aaa";
-            JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, urldisplay, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        JSONArray list = response.getJSONArray("list");
-                        weatherList = new ArrayList<>();
-                        for (int i = 0; i <= list.length() - 1; i++) {
-                            JSONObject huidigeresponse = list.getJSONObject(i);
-                            JSONObject main = huidigeresponse.getJSONObject("main");
-                            tijd = huidigeresponse.getString("dt_txt");
-                            JSONArray array = huidigeresponse.getJSONArray("weather");
-                            JSONObject object = array.getJSONObject(0);
-                            temp = "temperatuur: " + String.valueOf(Math.round(main.getDouble("temp")) - 273) + "°C";
-                            vochtigheid = "luchtvochtigheid: " + String.valueOf(main.getDouble("humidity")) + "%";
-                            luchtdruk = "Druk: " + String.valueOf(main.getDouble("pressure")) + "hPa";
-                            weerbericht = "weersvoorspelling: " + object.getString("main") + ", " + object.getString("description");
-                            String ico = object.getString("icon");
-                            //locatie = "locatie: " + huidigeresponse.getString("name");
-                            weather = new String[5];
-                            weather[0] = temp;
-                            weather[1] = vochtigheid;
-                            weather[2] = luchtdruk;
-                            weather[3] = weerbericht;
-                            weather[4] = tijd;
-                            weatherList.add(weather);
-                        }
-                        //new GetImageFromURL(icoon).execute("http://openweathermap.org/img/w/" + ico + ".png");
-                        WeatherRecyclerViewAdapter recyclerViewAdapter = new WeatherRecyclerViewAdapter(weatherList, getContext());
-                        recyclerView.setAdapter(recyclerViewAdapter);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+    public void getJSONData() {
+        String urldisplay = "http://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&APPID=dbc34f5cdcffd9d33c323cc03d196aaa";
+        JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, urldisplay, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONArray list = response.getJSONArray("list");
+                    weatherList = new ArrayList<>();
+                    for (int i = 0; i <= list.length() - 1; i++) {
+                        JSONObject huidigeresponse = list.getJSONObject(i);
+                        JSONObject main = huidigeresponse.getJSONObject("main");
+                        tijd = huidigeresponse.getString("dt_txt");
+                        JSONArray array = huidigeresponse.getJSONArray("weather");
+                        JSONObject object = array.getJSONObject(0);
+                        temp = "temperatuur: " + String.valueOf(Math.round(main.getDouble("temp")) - 273) + "°C";
+                        vochtigheid = "luchtvochtigheid: " + String.valueOf(main.getDouble("humidity")) + "%";
+                        luchtdruk = "Druk: " + String.valueOf(main.getDouble("pressure")) + "hPa";
+                        weerbericht = "weersvoorspelling: " + object.getString("main") + ", " + object.getString("description");
+                        icon = object.getString("icon");
+                        weather = new String[6];
+                        weather[0] = temp;
+                        weather[1] = vochtigheid;
+                        weather[2] = luchtdruk;
+                        weather[3] = weerbericht;
+                        weather[4] = tijd;
+                        weather[5] = icon;
+                        weatherList.add(weather);
                     }
+                    WeatherRecyclerViewAdapter recyclerViewAdapter = new WeatherRecyclerViewAdapter(weatherList, getContext());
+                    recyclerView.setAdapter(recyclerViewAdapter);
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+            }
 
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
 
-                }
-            });
-            RequestQueue queue = Volley.newRequestQueue(getContext());
-            queue.add(jor);
-        }
+            }
+        });
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        queue.add(jor);
     }
+}
 

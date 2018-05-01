@@ -18,16 +18,14 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 public class FragmentCompass extends Fragment implements SensorEventListener {
-    private ImageView image;
-    private SensorManager mSensorManager;
-    private TextView tvHeading;
-    private float[] mGeomagnetic = new float[3];
-    private float[] mGravity = new float[3];
-    private float azimuth = 0f;
-    private float currentAzimuth = 0f;
+    protected ImageView image;
+    protected SensorManager mSensorManager;
+    protected float[] mGeomagnetic = new float[3];
+    protected float[] mGravity = new float[3];
+    protected float azimuth = 0f;
+    protected float currentAzimuth = 0f;
 
     //deze hele klasse is gescheven analoog naar de beschrijfing op androiddev
     @Override
@@ -41,7 +39,6 @@ public class FragmentCompass extends Fragment implements SensorEventListener {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View myFragmentView = inflater.inflate(R.layout.fragment_compass, container, false);
         image = myFragmentView.findViewById(R.id.imageViewCompass);
-        tvHeading = myFragmentView.findViewById(R.id.tvHeading);
         return myFragmentView;
     }
 
@@ -129,7 +126,7 @@ public class FragmentCompass extends Fragment implements SensorEventListener {
         }
     }
 
-    public float[] filter(float[] input, float[] prev) {
+    public void filter(float[] input, float[] prev) {
         if (input == null || prev == null)
             throw new NullPointerException("input and prev float arrays must be non-NULL");
         if (input.length != prev.length)
@@ -138,7 +135,6 @@ public class FragmentCompass extends Fragment implements SensorEventListener {
         for (int i = 0; i < input.length; i++) {
             prev[i] = prev[i] + 0.2f + (input[i] - prev[i]);
         }
-        return prev;
     }
 
     @Override

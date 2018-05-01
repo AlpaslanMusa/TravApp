@@ -21,11 +21,11 @@ import java.util.List;
  * Created by aydogan on 26.03.18.
  */
 
-public class PlacesRecyclerViewAdapter extends RecyclerView.Adapter<PlacesRecyclerViewAdapter.ViewHolder> {
+class PlacesRecyclerViewAdapter extends RecyclerView.Adapter<PlacesRecyclerViewAdapter.ViewHolder> {
     private List<Place> placesList;
     private Context context;
 
-    public PlacesRecyclerViewAdapter(List<Place> list, Context ctx) {
+    PlacesRecyclerViewAdapter(List<Place> list, Context ctx) {
         this.placesList = list;
         this.context = ctx;
     }
@@ -38,8 +38,7 @@ public class PlacesRecyclerViewAdapter extends RecyclerView.Adapter<PlacesRecycl
     @Override
     public PlacesRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.places_layout, parent, false);
-        PlacesRecyclerViewAdapter.ViewHolder viewHolder = new PlacesRecyclerViewAdapter.ViewHolder(view);
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
     @Override
@@ -84,16 +83,16 @@ public class PlacesRecyclerViewAdapter extends RecyclerView.Adapter<PlacesRecycl
         }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView name;
-        public TextView address;
-        public TextView phone;
-        public TextView website;
-        public RatingBar ratingBar;
-        public Button viewOnMap;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        TextView name;
+        TextView address;
+        TextView phone;
+        TextView website;
+        RatingBar ratingBar;
+        Button viewOnMap;
 
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             name = view.findViewById(R.id.name);
             address = view.findViewById(R.id.address);
