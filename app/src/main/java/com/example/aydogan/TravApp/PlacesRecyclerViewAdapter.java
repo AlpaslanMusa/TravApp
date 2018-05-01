@@ -1,5 +1,6 @@
 package com.example.aydogan.TravApp;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -10,12 +11,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.places.Place;
 
 import java.util.List;
-
-import static android.support.v4.content.ContextCompat.startActivity;
 
 /**
  * Created by aydogan on 26.03.18.
@@ -69,11 +69,19 @@ public class PlacesRecyclerViewAdapter extends RecyclerView.Adapter<PlacesRecycl
     }
 
     private void showOnMap(Place place) {
-        Intent intent = null, chooser = null;
-        Uri gmmIntentUri = Uri.parse("geo:0,0?q=" + place.getAddress());
-        intent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-        chooser = Intent.createChooser(intent, "Display on Map");
-        startActivity(context, chooser, null);
+        Intent intent = null;
+        intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=" + place.getAddress()));
+        intent.setPackage("com.google.android.apps.maps");
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException ex) {
+            try {
+                Intent unrestrictedIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=" + place.getAddress()));
+                context.startActivity(unrestrictedIntent);
+            } catch (ActivityNotFoundException innerEx) {
+                Toast.makeText(context, "Please install a maps application", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

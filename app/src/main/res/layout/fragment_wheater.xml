@@ -1,55 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:orientation="vertical">
+    android:background="@android:color/white">
 
-    <TextView
-        android:id="@+id/locatie"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/weather_lst"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal" />
-
-    <TextView
-        android:id="@+id/tijd_datum"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal" />
-
-    <ImageView
-        android:id="@+id/weericoon"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/temp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal" />
-
-    <TextView
-        android:id="@+id/weerbericht"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal" />
-
-    <TextView
-        android:id="@+id/luchtvochtigheid"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal" />
-
-    <TextView
-        android:id="@+id/druk"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal" />
-
-    <Button
-        android:id="@+id/refresh"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Refresh" />
-
-</android.support.v7.widget.LinearLayoutCompat>
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</android.support.constraint.ConstraintLayout>

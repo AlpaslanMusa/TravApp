@@ -1,13 +1,13 @@
 package com.example.aydogan.TravApp;
 
+import android.*;
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,18 +16,20 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.Response.ErrorListener;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
@@ -44,68 +46,75 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by aydogan on 26.03.18.
  */
 
 public class FragmentWheater extends Fragment {
-    protected static final String TAG = "CurrentLocNearByPlaces";
+    public static final String TAG = "CurrentLocNearByPlaces";
     protected static final int LOC_REQ_CODE = 1;
     protected View myFragmentView;
+    protected RecyclerView recyclerView;
     protected GeoDataClient mGeoDataClient;
     protected PlaceDetectionClient mPlaceDetectionClient;
-    protected ImageView icoon;
-    protected TextView temperatuur;
-    protected TextView plaats;
-    protected TextView tijd_datum;
-    protected TextView weerbeschrijving;
-    protected TextView vochtigheid;
-    protected TextView luchtdruk;
-    protected Button btnMakeJSONRequest;
     protected String lat;
     protected String lon;
-    protected String temp_c;
-    protected String weerbericht_c;
-    protected String locatie_c;
-    protected String luchtdruk_c;
-    protected String vochtigheid_c;
-    protected long tijd;
+    protected String temp;
+    protected String weerbericht;
+    protected String locatie;
+    protected String luchtdruk;
+    protected String vochtigheid;
+    protected String tijd;
+    protected List<String[]> weatherList;
+    protected String[] weather;
+
+    public static String EpochToDate(long time, String formatString) {
+        Date updatedate = new Date(time * 1000);
+        SimpleDateFormat format = new SimpleDateFormat(formatString);
+        return format.format(updatedate);
+
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        isLocatieServicesActief();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        super.onCreateOptionsMenu(menu, menuInflater);
+        menuInflater.inflate(R.menu.menu_refresh, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        getCurrentPlace();
+        getJSONData();
+        return true;
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         myFragmentView = inflater.inflate(R.layout.fragment_wheater, container, false);
-        btnMakeJSONRequest = myFragmentView.findViewById(R.id.refresh);
-        temperatuur = myFragmentView.findViewById(R.id.temp);
-        plaats = myFragmentView.findViewById(R.id.locatie);
-        tijd_datum = myFragmentView.findViewById(R.id.tijd_datum);
-        weerbeschrijving = myFragmentView.findViewById(R.id.weerbericht);
-        icoon = myFragmentView.findViewById(R.id.weericoon);
-        luchtdruk = myFragmentView.findViewById(R.id.druk);
-        vochtigheid = myFragmentView.findViewById(R.id.luchtvochtigheid);
+        recyclerView = myFragmentView.findViewById(R.id.weather_lst);
+        LinearLayoutManager recyclerLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(recyclerLayoutManager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), recyclerLayoutManager.getOrientation());
+        recyclerView.addItemDecoration(dividerItemDecoration);
         mGeoDataClient = Places.getGeoDataClient(getActivity(), null);
         mPlaceDetectionClient = Places.getPlaceDetectionClient(getActivity(), null);
-        btnMakeJSONRequest.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                makeJsonJSONRequest();
-            }
-        });
+        getCurrentPlace();
+        getJSONData();
         return myFragmentView;
     }
 
@@ -113,54 +122,7 @@ public class FragmentWheater extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         getActivity().setTitle("Wheater");
-        isLocatieServicesActief();
-        makeJsonJSONRequest();
-        makeJsonJSONRequest();
-        makeJsonJSONRequest();
     }
-
-    public void makeJsonJSONRequest() {
-        getCurrentPlaceData();
-        //Dit is een test we zullen deze url vervangen door een dynamisch aangemaakte waarbij wordt gekeken naar de locatie waar de persoon zich bevind
-        String url = "http://api.openweathermap.org/data/2.5/weather?lat=" + String.valueOf(lat) + "&lon=" + String.valueOf(lon) + "&APPID=dbc34f5cdcffd9d33c323cc03d196aaa";
-
-        JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    JSONObject main = response.getJSONObject("main");
-                    tijd = response.getLong("dt");
-                    JSONArray array = response.getJSONArray("weather");
-                    JSONObject object = array.getJSONObject(0);
-                    temp_c = "temperatuur: " + String.valueOf(Math.round(main.getDouble("temp")) - 273) + "°C";
-                    vochtigheid_c = "luchtvochtigheid: " + String.valueOf(main.getDouble("humidity")) + "%";
-                    luchtdruk_c = "Druk: " + String.valueOf(main.getDouble("pressure")) + "hPa";
-                    weerbericht_c = "weersvoorspelling: " + object.getString("main") + ", " + object.getString("description");
-                    String ico = object.getString("icon");
-                    locatie_c = "locatie: " + response.getString("name");
-                    luchtdruk.setText(luchtdruk_c);
-                    vochtigheid.setText(vochtigheid_c);
-                    tijd_datum.setText("Datum: " + EpochToDate(tijd, "yyyy-mm-dd"));
-                    temperatuur.setText(temp_c);
-                    plaats.setText(locatie_c);
-                    weerbeschrijving.setText(weerbericht_c);
-                    new GetImageFromURL(icoon).execute("http://openweathermap.org/img/w/" + ico + ".png");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }, new ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-
-        RequestQueue queue = Volley.newRequestQueue(getContext());
-        queue.add(jor);
-    }
-
 
     private void requestLocationAccessPermission() {
         requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, LOC_REQ_CODE);
@@ -201,9 +163,9 @@ public class FragmentWheater extends Fragment {
         }
     }
 
-    private void getCurrentPlaceData() {
+    private void getCurrentPlace() {
         //kijken of er permission is gegeven aan de app om gebruikt te maken van gps
-        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //is dit niet het geval dan wordt er om toestemming gevraagd
             requestLocationAccessPermission();
             return;
@@ -217,64 +179,66 @@ public class FragmentWheater extends Fragment {
             @SuppressLint("RestrictedApi")
             @Override
             public void onComplete(@NonNull Task<PlaceLikelihoodBufferResponse> task) {
-                PlaceLikelihoodBufferResponse likelyPlaces = task.getResult();
-                List<Place> placesList = new ArrayList<Place>();
-                for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-                    Log.i(TAG, String.format("Place '%s' has likelihood: %g",
-                            placeLikelihood.getPlace().getName(),
-                            placeLikelihood.getLikelihood()));
-                    if (1 - placeLikelihood.getLikelihood() <= 0.5) {
-                        lat = String.valueOf(placeLikelihood.getPlace().getLatLng().latitude);
-                        lon = String.valueOf(placeLikelihood.getPlace().getLatLng().longitude);
+                List<Place> placesList = new ArrayList<>();
+                    PlaceLikelihoodBufferResponse likelyPlaces = task.getResult();
+                    for (PlaceLikelihood placeLikelihood : likelyPlaces) {
+                        Log.i(TAG, String.format("Place '%s' has likelihood: %g", placeLikelihood.getPlace().getName(), placeLikelihood.getLikelihood()));
+                        placesList.add(placeLikelihood.getPlace());
                     }
-                    placesList.add(placeLikelihood.getPlace().freeze());
-                }
-                likelyPlaces.release();
+                    likelyPlaces.release();
+                lat = String.valueOf(placesList.get(0).getLatLng().latitude);
+                lon = String.valueOf(placesList.get(0).getLatLng().longitude);
             }
-
         });
 
     }
 
-    public class GetImageFromURL extends AsyncTask<String, Void, Bitmap> {
-        ImageView img;
-        Bitmap bitm;
+        protected void getJSONData() {
+            getCurrentPlace();
+            getCurrentPlace();
+            String urldisplay = "http://api.openweathermap.org/data/2.5/forecast?lat=" + lat + "&lon=" + lon + "&APPID=dbc34f5cdcffd9d33c323cc03d196aaa";
+            JsonObjectRequest jor = new JsonObjectRequest(Request.Method.GET, urldisplay, null, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        JSONArray list = response.getJSONArray("list");
+                        weatherList = new ArrayList<>();
+                        for (int i = 0; i <= list.length() - 1; i++) {
+                            JSONObject huidigeresponse = list.getJSONObject(i);
+                            JSONObject main = huidigeresponse.getJSONObject("main");
+                            tijd = huidigeresponse.getString("dt_txt");
+                            JSONArray array = huidigeresponse.getJSONArray("weather");
+                            JSONObject object = array.getJSONObject(0);
+                            temp = "temperatuur: " + String.valueOf(Math.round(main.getDouble("temp")) - 273) + "°C";
+                            vochtigheid = "luchtvochtigheid: " + String.valueOf(main.getDouble("humidity")) + "%";
+                            luchtdruk = "Druk: " + String.valueOf(main.getDouble("pressure")) + "hPa";
+                            weerbericht = "weersvoorspelling: " + object.getString("main") + ", " + object.getString("description");
+                            String ico = object.getString("icon");
+                            //locatie = "locatie: " + huidigeresponse.getString("name");
+                            weather = new String[5];
+                            weather[0] = temp;
+                            weather[1] = vochtigheid;
+                            weather[2] = luchtdruk;
+                            weather[3] = weerbericht;
+                            weather[4] = tijd;
+                            weatherList.add(weather);
+                        }
+                        //new GetImageFromURL(icoon).execute("http://openweathermap.org/img/w/" + ico + ".png");
+                        WeatherRecyclerViewAdapter recyclerViewAdapter = new WeatherRecyclerViewAdapter(weatherList, getContext());
+                        recyclerView.setAdapter(recyclerViewAdapter);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-        public GetImageFromURL(ImageView imgV) {
-            this.img = imgV;
-        }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
 
-        @Override
-        protected Bitmap doInBackground(String... url) {
-            String urldisplay = url[0];
-            bitm = null;
-            try {
-                InputStream is = new URL(urldisplay).openStream();
-                bitm = BitmapFactory.decodeStream(is);
-                float aspectRatio = bitm.getWidth() /
-                        (float) bitm.getHeight();
-                int width = 240;
-                int height = Math.round(width / aspectRatio);
-                bitm = Bitmap.createScaledBitmap(bitm, width, height, false);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return bitm;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-            img.setImageBitmap(bitmap);
+                }
+            });
+            RequestQueue queue = Volley.newRequestQueue(getContext());
+            queue.add(jor);
         }
     }
 
-    public static String EpochToDate(long time, String formatString) {
-        Date updatedate = new Date(time * 1000);
-        SimpleDateFormat format = new SimpleDateFormat(formatString);
-        return format.format(updatedate);
-
-    }
-}
