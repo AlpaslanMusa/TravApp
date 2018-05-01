@@ -7,7 +7,7 @@
         <item
             android:id="@+id/nav_compass"
             android:icon="@drawable/ic_menu_compass"
-            android:title="Compass" />
+            android:title="Compass"/>
         <item
             android:id="@+id/nav_nearbyplaces"
             android:icon="@drawable/ic_place_black_24dp"
