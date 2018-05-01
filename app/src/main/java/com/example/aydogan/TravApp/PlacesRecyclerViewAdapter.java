@@ -18,7 +18,9 @@ import com.google.android.gms.location.places.Place;
 import java.util.List;
 
 /**
- * Created by aydogan on 26.03.18.
+ * Edited 01.05.2018 by Aydogan Musa
+ * Hier word een recyclerview aangemaakt voor onze nearbyplaces sectie van de app de data die in de nearbyplacesfragment klasse worden
+ * binnen gehaald vanuit de Google Places API worden hier doorgegeven aan de view via een recyclerview
  */
 
 class PlacesRecyclerViewAdapter extends RecyclerView.Adapter<PlacesRecyclerViewAdapter.ViewHolder> {

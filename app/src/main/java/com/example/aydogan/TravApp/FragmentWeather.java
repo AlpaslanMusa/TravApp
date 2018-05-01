@@ -47,7 +47,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by aydogan on 26.03.18.
+ * Edited 01.05.2018 by Aydogan Musa
+ * Deze fragment zorgt voor onze weather (weerberichten) sectie binnen de app, deze wordt opgeroepen vanaf de Mainactivity
+ * We maken hier gebruik van de Google Places API en de OpenWeatherMap API
  */
 
 public class FragmentWeather extends Fragment {

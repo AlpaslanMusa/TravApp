@@ -46,7 +46,9 @@ import java.util.List;
 
 
 /**
- * Created by aydogan on 26.03.18.
+ * Edited 01.05.2018 by Aydogan Musa
+ * Deze fragment zorgt voor onze NearbyPlaces sectie binnen de app, deze wordt opgeroepen vanaf de Mainactivity
+ * We maken hier gebruik van de Google Places API
  */
 public class FragmentNearbyPlaces extends Fragment {
     protected static final String TAG = "CurrentLocNearByPlaces";
@@ -110,6 +112,10 @@ public class FragmentNearbyPlaces extends Fragment {
             requestLocationAccessPermission();
             return;
         }
+        //De werking van volgende code wordt in detail bescheven op de google API service site
+        //Ruw genomen wordt er met gps data gevoerd aan de places API en die geeft meerdere nabij gelegeven locaties door met bij
+        //elke locatie een waarschijnlijkheid dat de gebruiker zich daar bevindt
+        //al deze locaties worden dan in een lijst bijgehouden en gevoerd aan de recyclerview
         Task<PlaceLikelihoodBufferResponse> placeResult = mPlaceDetectionClient.getCurrentPlace(null);
         placeResult.addOnCompleteListener(new OnCompleteListener<PlaceLikelihoodBufferResponse>() {
             @SuppressLint("RestrictedApi")

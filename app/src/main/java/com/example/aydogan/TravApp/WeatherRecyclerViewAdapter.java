@@ -11,9 +11,10 @@ import android.widget.TextView;
 import java.util.List;
 
 /**
- * Created by aydogan on 26.03.18.
+ * Edited 01.05.2018 by Aydogan Musa
+ * Hier word een recyclerview aangemaakt voor onze weather sectie van de app de data die in de weatherfragment klasse worden
+ * binnen gehaald vanuit de Google Places API en OpenWeatherMap API worden hier doorgegeven aan de view via een recyclerview
  */
-
 class WeatherRecyclerViewAdapter extends RecyclerView.Adapter<WeatherRecyclerViewAdapter.ViewHolder> {
     private List<String[]> weatherList;
     private Context context;

@@ -12,6 +12,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+/**
+ * Edited 01.05.2018 by Aydogan Musa
+ * Dit is de MainActivity hiermee begint onze app en alle fragmenten worden vanaf hier opgeroepen en runnen on top
+ */
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override

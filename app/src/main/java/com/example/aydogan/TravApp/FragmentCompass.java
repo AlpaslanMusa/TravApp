@@ -1,7 +1,9 @@
 package com.example.aydogan.TravApp;
 
 /**
- * Created by aydogan on 25.03.18.
+ * Edited 01.05.2018 by Aydogan Musa
+ * Deze fragment zorgt voor onze compass binnen de app deze wordt opgeroepen vanaf de Mainactivity
+ * Deze hele klasse is analoog geschreven naar de beschrijvingen op de androiddev pagina https://developer.android.com/reference/android/hardware/SensorEvent
  */
 
 import android.content.Context;
@@ -27,7 +29,6 @@ public class FragmentCompass extends Fragment implements SensorEventListener {
     protected float azimuth = 0f;
     protected float currentAzimuth = 0f;
 
-    //deze hele klasse is gescheven analoog naar de beschrijfing op androiddev
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,25 +82,21 @@ public class FragmentCompass extends Fragment implements SensorEventListener {
         final float alpha = 0.97f;
         synchronized (this) {
             if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                float[] uitgang1 = new float[3];
-                filter(sensorEvent.values, uitgang1);
-                mGravity[0] = uitgang1[0];
-                mGravity[1] = uitgang1[1];
-                mGravity[2] = uitgang1[2];
+                mGravity[0] = alpha * mGravity[0] + (1 - alpha) * sensorEvent.values[0]; //SensorEvent.values[0] = Acceleration minus Gx on the x-axis
+                mGravity[1] = alpha * mGravity[1] + (1 - alpha) * sensorEvent.values[1]; //SensorEvent.values[1]: Acceleration minus Gy on the y-axis
+                mGravity[2] = alpha * mGravity[2] + (1 - alpha) * sensorEvent.values[2]; //SensorEvent.values[2]: Acceleration minus Gz on the z-axis
 
             }
             if (sensorEvent.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-                float[] uitgang2 = new float[3];
-                filter(sensorEvent.values, uitgang2);
-                mGeomagnetic[0] = uitgang2[0];
-                mGeomagnetic[1] = uitgang2[1];
-                mGeomagnetic[2] = uitgang2[2];
+                mGeomagnetic[0] = alpha * mGeomagnetic[0] + (1 - alpha) * sensorEvent.values[0]; //All values are in micro-Tesla (uT) and measure the ambient magnetic field in the X, Y and Z axis.
+                mGeomagnetic[1] = alpha * mGeomagnetic[1] + (1 - alpha) * sensorEvent.values[1];
+                mGeomagnetic[2] = alpha * mGeomagnetic[2] + (1 - alpha) * sensorEvent.values[2];
 
             }
 
             float R[] = new float[9];
             float I[] = new float[9];
-            boolean succes = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+            boolean succes = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic); //rotatiematrix bepalen adhv van Magnetischveld in XYZ en versnellingen rond XYZ-assen
             if (succes) {
                 //deze array moet volgens AndoidDev 3 lang zijn deze gaat gevuld worden met parameters die orientatie van toestel uitdrukken
                 float orientation[] = new float[3];
@@ -123,17 +120,6 @@ public class FragmentCompass extends Fragment implements SensorEventListener {
                 //We starten de animatie
                 image.startAnimation(anim);
             }
-        }
-    }
-
-    public void filter(float[] input, float[] prev) {
-        if (input == null || prev == null)
-            throw new NullPointerException("input and prev float arrays must be non-NULL");
-        if (input.length != prev.length)
-            throw new IllegalArgumentException("input and prev must be the same length");
-
-        for (int i = 0; i < input.length; i++) {
-            prev[i] = prev[i] + 0.2f + (input[i] - prev[i]);
         }
     }
 
